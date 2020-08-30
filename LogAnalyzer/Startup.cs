@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LogAnalyzer.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -35,6 +36,8 @@ namespace LogAnalyzer
 
             // Add Kendo UI services to the services container
             services.AddKendo();
+
+            services.AddScoped<ILogParse, LogParseFiles>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

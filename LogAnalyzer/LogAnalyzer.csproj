@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
+    <PackageReference Include="Microsoft.Web.Administration" Version="11.1.0" />
     <PackageReference Include="Telerik.UI.for.AspNet.Core" Version="2019.3.1023" />
   </ItemGroup>
 

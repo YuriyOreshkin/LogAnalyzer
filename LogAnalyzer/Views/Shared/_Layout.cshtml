@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - LogAnalyzer</title>
 
- 
+
     <link href="@Url.Content("~/css/kendo/2019.3.1023/kendo.material.min.css")" rel="stylesheet" type="text/css" />
     <link href="@Url.Content("~/css/kendo/2019.3.1023/kendo.common.min.css")" rel="stylesheet" type="text/css" />
 
@@ -13,9 +13,12 @@
     <script src="@Url.Content("~/js/kendo/2019.3.1023/jszip.min.js")"></script>
     <script src="@Url.Content("~/js/kendo/2019.3.1023/kendo.all.min.js")"></script>
     <script src="@Url.Content("~/js/kendo/2019.3.1023/kendo.aspnetmvc.min.js")"></script>
-
+    <script src="@Url.Content("~/js/kendo/2019.3.1023/cultures/kendo.culture.ru-RU.min.js")"></script>
+   
     <environment names="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" />
+
+        <link rel="stylesheet" href="~/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/bootstrap.min.css" />
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment names="Staging,Production">
@@ -26,42 +29,11 @@
     </environment>
 </head>
     <body class="k-content">
-        <nav class="navbar navbar-inverse navbar-fixed-top p-3">
-            <div class="container p-0 p-sm-3">
-                <div class="navbar-header">
-                    <kendo-button name="configure" tag="button" icon="menu" class="k-rpanel-toggle k-primary btn-toggle"></kendo-button>
-                    <a asp-controller="Home" asp-action="Index" class="navbar-brand">Your .NET Core Application</a>
-                </div>
-                <div id="responsive-panel" class="navbar-left">
-                    <kendo-responsivepanel name="responsive-panel" auto-close="false" breakpoint="768" orientation="top">
-                        @(Html.Kendo().Menu()
-                                    .Name("Menu")
-                                    .Items(items =>
-                                    {
-                                        items.Add().Text("Home").Action("Index", "Home", new { area = "" });
-                                        items.Add().Text("About").Action("About", "Home", new { area = "" });
-                                        items.Add().Text("Contact").Action("Contact", "Home", new { area = "" });
-                                    })
-                        )
-                    </kendo-responsivepanel>
-                </div>
-            </div>
-        </nav>
-
-        <main>
-            <div class="container">
+       
+        
+            <div class="container-fluid">
                 @RenderBody()
             </div>
-        </main>
-
-        <footer class="footer text-center d-flex align-items-center">
-            <div class="container pb-0">
-                <hr />
-                <p class="text-muted">
-                    Copyright © @DateTime.Now.Year Progress Software Corporation and/or its subsidiaries or affiliates. All rights reserved.
-                </p>
-            </div>
-        </footer>
 
         <environment names="Development">
             <script src="~/lib/bootstrap/js/bootstrap.js"></script>

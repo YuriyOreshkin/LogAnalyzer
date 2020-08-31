@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Web.Administration;
 using System.Threading.Tasks;
+using LogAnalyzer.Models.Domain.Entities;
 
-namespace LogAnalyzer.Models
+namespace LogAnalyzer.Models.Domain.Providers
 {
     public class LogParseFiles : ILogParse
     {
-        readonly string logsdirectory= @"C:\Users\gone\source\repos\YuriyOreshkin\LogAnalyzer\LogAnalyzer\App_Data\";
+        readonly string logsdirectory= @"C:\Users\007OreshkinYV\source\repos\LogAnalyzer\LogAnalyzer\App_Data\";
         public IQueryable<LogString> GetLogStrings()
         {
             List<LogString> log = new List<LogString>();
@@ -17,7 +19,6 @@ namespace LogAnalyzer.Models
                 IEnumerable<string> lines = File.ReadAllLines(filename).Where(l=>!l.StartsWith('#'));
                 foreach (string line in lines)
                 {
-
                     log.Add(LogStringParse(line));
                 }
             }
@@ -49,5 +50,7 @@ namespace LogAnalyzer.Models
         {
             return Directory.GetFiles(directory,"*", SearchOption.AllDirectories);
         }
+
+    
     }
 }

@@ -14,18 +14,16 @@ namespace LogAnalyzer.Controllers
             return View();
         }
 
-        public IActionResult About()
+        public IActionResult Tree()
         {
-            ViewData["Message"] = "Your application description page.";
 
-            return View();
+            return PartialView();
         }
 
-        public IActionResult Contact()
+        public IActionResult Content()
         {
-            ViewData["Message"] = "Your contact page.";
 
-            return View();
+            return  PartialView();
         }
 
         public IActionResult Error()

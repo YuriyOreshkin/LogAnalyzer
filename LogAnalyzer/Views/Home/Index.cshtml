@@ -1,25 +1,99 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "LOG ANALYZER";
 }
 
-    <div>
-        @(Html.Kendo().Grid<LogAnalyzer.Models.LogString>()
-        .Name("grid")
-        .Columns(columns =>
-                {
-            columns.Bound(p => p.uri).Filterable(false).Width(100);
-            columns.Bound(p => p.time).Width(100);
-            columns.Bound(p => p.date).Format("{0:MM/dd/yyyy}").Width(140);
-            columns.Bound(p => p.clientIP);
-            columns.Bound(p => p.status).Width(150);
-        })
-        .Pageable()
-        .Sortable()
-        .Scrollable()
-        .Filterable()
-        .DataSource(dataSource => dataSource
-            .Ajax()
-            .Read(read => read.Action("GridRead", "Services"))
-         )
-        )
+<div class="row row-offcanvas row-offcanvas-left">
+    <div id="nav-section" class="col-xs-12 column">
+        <h1 id="dash-logo" class="center-block">LOG·Analyser</h1>
+        <div class="collapse navbar-collapse" id="sidebar-nav" role="navigation">
+            @(Html.Kendo().TreeView()
+                                                                       .Name("tree")
+                                                                       .DataTextField("name")
+                                                                       .HtmlAttributes(new { @class = "nav" })
+                                                                       .TemplateId("treeview-template")
+                                                                       .DataSource(dataSource => dataSource
+                                                                                   .Read(read => read.Action("TreeRead", "Services"))
+                                                                                   .Model(m => m.Id("id"))
+                                                                                   )
+            )
+            <div id="rights">
+                <p>
+                    Copyright ©
+                    <script type="text/javascript">document.write(new Date().getFullYear());</script>. All Rights Reserved.
+                </p>
+            </div>
+        </div>
     </div>
+    <div id="main-section" class="col-xs-12 column">
+        <div id="main-section-header" class="row">
+            <h2 id="team-efficiency" class="col-xs-3">Statistics</h2>
+            <div id="dateFilter" class="col-xs-9">
+                @(Html.Kendo().DateRangePicker()
+                                                                                                                                                                                    .Name("daterangepicker")
+                                                                                                                                                                                    .HtmlAttributes(new { style = "background-color:transparent;" })
+                                                                                                                                                                                    .Labels(false)
+                                                                                                                                                                                    .Range(r => r.Start(DateTime.Now).End(DateTime.Now))
+                                                                                                                                                                                    .Culture("ru-RU")
+
+                        //.Events(ev => ev.Change("notificationsFiltering"))
+                )
+
+            </div>
+        </div>
+        <div id="regional-sales" class="main-section-content row">
+        </div>
+    </div>
+</div>
+<script>
+
+    function GridParameters() {
+        var range = GetDateRange();
+
+        return { datebegin: range.start.toJSON(), dateend: range.end.toJSON() };
+    }
+
+    function GetDateRange() {
+        var daterangepicker = $("#daterangepicker").data("kendoDateRangePicker");
+        var range = daterangepicker.range()
+
+        return range;
+    }
+
+    function GetSite() {
+
+    }
+
+</script>
+<style>
+
+    .k-icon-24 {
+        font-size: 16px; /* Sets icon size to 32px */
+        color: #b8bbc2;
+    }
+
+    #tree .k-item {
+
+        color: #b8bbc2;
+    }
+</style>
+<script id="treeview-template" type="text/kendo-ui-template">
+    # if (item.id > 0) { #
+    
+        <span class="k-icon  k-i-dribbble k-icon-24"></span>
+        <span  style="text-transform: uppercase; text-decoration: none; margin-left: 1em; font-size: 13px;">
+            #: item.name #
+        </span>    
+
+
+
+    # } else { #
+    <span style="white-space:normal;">
+        <dl class="period-details" style="margin-bottom: 2px;">
+            <dt class="text">#: item.Text # <a id='period-delete_#: item.indicatorId #-#: item.id #' class='action-tree delete-link period-delete' title='Удалить' href='\#'></a> </dt>
+            <dd class="deadline">кд: #:  StringDate(item.deadline) #  <a id='deadline-update_#: item.indicatorId #-#: item.id #' class='action-tree update-link deadline-update' title='Контрольная дата' href='\#'></a> </dd>
+        </dl>
+        <span>
+            #}#
+
+</script>
+

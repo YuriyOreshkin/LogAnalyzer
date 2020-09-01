@@ -7,8 +7,9 @@ namespace LogAnalyzer.Models.Domain.Entities
 {
     public class SiteTree
     {
-       public long id { get; set; }
-       public string name { get; set; }
+        public long id { get; set; }
+        public string name { get; set; }
+        public bool issite { get; set; }
        public string logpath { get; set; }
        public long? parentid { get; set; } 
     }

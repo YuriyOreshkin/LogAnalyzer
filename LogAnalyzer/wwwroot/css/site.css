@@ -213,6 +213,8 @@ body,
 
 #sidebar-nav {
     padding: 0;
+    margin-top:20px;
+    margin-left:5px;
 }
 
 #rights {
@@ -249,7 +251,7 @@ body,
     width: auto;
     overflow: hidden;
     height: 100%;
-    /*background-color: #eee;*/
+    background-color: #eee;
 }
 
 #employee-list {
@@ -587,7 +589,7 @@ body,
 }
 
 .stats-graph {
-    padding: 15px 30px 30px;
+    padding: 10px;
 }
 
 #market-share-label,

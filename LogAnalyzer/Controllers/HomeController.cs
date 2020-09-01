@@ -14,21 +14,6 @@ namespace LogAnalyzer.Controllers
             return View();
         }
 
-        public IActionResult Tree()
-        {
-
-            return PartialView();
-        }
-
-        public IActionResult Content()
-        {
-
-            return  PartialView();
-        }
-
-        public IActionResult Error()
-        {
-            return View();
-        }
+      
     }
 }

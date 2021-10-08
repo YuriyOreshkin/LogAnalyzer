@@ -1,0 +1,359 @@
+﻿@model IEnumerable<LogAnalyzer.Models.ChartSitesHitsView>
+
+@{
+    ViewData["Title"] = "LOG ANALYZER";
+}
+
+<div class="row row-offcanvas row-offcanvas-left">
+    <div id="nav-section" class="col-xs-12 column">
+        <h1 id="dash-logo" class="center-block">LOG·Analyser</h1>
+        <div class="collapse navbar-collapse" id="sidebar-nav" role="navigation">
+            @(Html.Kendo().TreeView()
+                                                                                       .Name("tree")
+                                                                                       .DataTextField("name")
+                                                                                       .HtmlAttributes(new { @class = "nav" })
+                                                                                       .TemplateId("treeview-template")
+                                                                                       .Checkboxes()
+                                                                                       .DataSource(dataSource => dataSource
+                                                                                                   .Read(read => read.Action("TreeRead", "Services"))
+                                                                                                   .Model(m => m.Id("id"))
+                                                                                                   )
+                                                                                       .Events(ev => ev.Check("RefreshData"))
+            )
+
+        </div>
+        <div id="rights">
+            <p>
+                Copyright ©
+                <script type="text/javascript">document.write(new Date().getFullYear());</script>. All Rights Reserved.
+            </p>
+        </div>
+    </div>
+    <div id="main-section" class="col-xs-12 column">
+        <div id="main-section-header" class="row">
+            <h2 id="team-efficiency" class="col-xs-3">Statistics</h2>
+            <div id="dateFilter" class="col-xs-9">
+                @(Html.Kendo().DateRangePicker()
+                                      .Name("daterangepicker")
+                                      .HtmlAttributes(new { style = "background-color:transparent;" })
+                                      .Labels(false)
+                                      .Range(r => r.Start(DateTime.Now.AddDays(-6)).End(DateTime.Now.AddDays(-1)))
+                                      .Culture("ru-RU")
+                                      .Events(ev => ev.Change("RefreshData"))
+                )
+
+            </div>
+        </div>
+        <div id="regional-sales" class="main-section-content row">
+            <div id="HitsContainer">
+                @(Html.Kendo().Chart<LogAnalyzer.Models.ChartSitesHitsView>()
+                                    .Name("chartHits")
+                                    .HtmlAttributes(new { @class = "data-view" })
+                                    .Title("All visits")
+                                    .ChartArea(chartArea => chartArea.Background("none"))
+                                    .Legend(legent => legent.Position(ChartLegendPosition.Bottom))
+                                    .Series(series => series
+                                        .Line(model => model.Hits)
+                                        .Name("#= group.value #").CategoryField("Date")
+                                        .Aggregate(ChartSeriesAggregate.Sum)
+                                    )
+                                    .AutoBind(true)
+                                    .CategoryAxis(axis => axis
+                                        .Date()
+                                        .Labels(label => label.Format("dd.MM.yyyy"))
+                                        .MinorGridLines(grid => grid.Visible(true))
+                                    )
+                                    .DataSource(dataSource => dataSource
+                                        .Read(read => read.Action("ChartSitesHits", "Services").Data("getData"))
+                                        .Group(group => group.Add(model => model.SiteName))
+                                        .Sort(sort => sort.Add(model => model.Date)))
+                                    .Tooltip(tooltip => tooltip.Visible(true))
+
+                )
+            </div>
+            <div id="UniqVisitorsContainer">
+                @(Html.Kendo().Chart<LogAnalyzer.Models.ChartSitesUniqVisitorsView>()
+                           .Name("chartUniqVisitors")
+                           .HtmlAttributes(new { @class = "data-view" })
+                           .Title("Unique visitors")
+                           .DataSource(dataSource => dataSource
+                               .Read(read => read.Action("ChartUniqVisitors", "Services").Data("getData"))
+                               .Group(group => group.Add(model => model.SiteName))
+                               .Sort(sort => sort.Add(model => model.Date).Ascending())
+                           )
+                           .Series(series =>
+                           {
+                               series.Bar(model => model.UniqVisitors)
+                                   .Name("#= group.value #").CategoryField("Date")
+                                   .Aggregate(ChartSeriesAggregate.Sum);
+                           })
+                           .Legend(legend => legend
+                               .Position(ChartLegendPosition.Bottom)
+                           )
+                            .SeriesDefaults(seriesDefaults =>
+                                                seriesDefaults.Bar().Stack(true)
+                                            )
+                           .CategoryAxis(axis => axis
+                               .Date()
+                               .Labels(label => label.Format("dd.MM.yyyy"))
+                               .MinorGridLines(grid => grid.Visible(true))
+                           )
+                           .Tooltip(tooltip => tooltip.Visible(true))
+                )
+            </div>
+            <div id="AgentStatusContainer" class="row">
+                <div id="StatusContainer" class="col-xs-4 stats-graph">
+                    @(Html.Kendo().Chart<LogAnalyzer.Models.ChartHTTPStatusView>()
+                                              .Name("chartHTTPStatus")
+                                              .HtmlAttributes(new { @class = "data-view" })
+                                              .Title(title => title.Text("HTTP response status").Position(ChartTitlePosition.Top))
+                                              .ChartArea(chartArea => chartArea.Background("none"))
+                                              .Legend(legend => legend
+                                                  .Visible(false).Position(ChartLegendPosition.Top)
+                                              )
+                                               .DataSource(ds =>
+                                               {
+                                                   ds.Read(read => read.Action("ChartHTTPStatus", "Services").Data("getData"));
+                                                   ds.Sort(sort => sort.Add(model => model.Status).Ascending());
+                                               })
+                                            .Series(series =>
+                                            {
+                                                series.Pie(model => model.Percentage, model => model.Status).Labels(labels => labels
+                                                                        .Template("#= category #: \n #= value#%")
+                                                                        .Background("transparent")
+                                                                        .Visible(true).Align(ChartPieLabelsAlign.Column)
+                                                                    );
+                                            })
+
+                                             .Tooltip(tooltip => tooltip.Visible(true).Template("${ category } - ${ value }%"))
+                    )
+                </div>
+                <div id="AgentContainer" class="col-xs-4 stats-graph">
+                    @(Html.Kendo().Chart<LogAnalyzer.Models.ChartBrowsersView>()
+                                                 .Name("chartBrowsers")
+                                                 .HtmlAttributes(new { @class = "data-view" })
+                                                 .Title(title => title.Text("Client Browsers").Position(ChartTitlePosition.Top))
+                                                 .ChartArea(chartArea => chartArea.Background("none"))
+                                                 .Legend(legend => legend
+                                                     .Visible(false).Position(ChartLegendPosition.Top)
+                                                 )
+                                                  .DataSource(ds =>
+                                                  {
+                                                      ds.Read(read => read.Action("ChartBrowsers", "Services").Data("getData"));
+                                                      ds.Sort(sort => sort.Add(model => model.Browser).Ascending());
+                                                  })
+                                               .Series(series =>
+                                               {
+                                                   series.Donut(model => model.Percentage, model => model.Browser).Labels(labels => labels
+                                                                           .Template("#= category #: \n #= value#%")
+                                                                           .Background("transparent")
+                                                                           .Visible(true).Position(ChartSeriesLabelsPosition.OutsideEnd)
+                                                                       );
+                                               })
+
+                                                .Tooltip(tooltip => tooltip.Visible(true).Template("${ category } - ${ value }%"))
+                    )
+                </div>
+                <div id="ClientOSContainer" class="col-xs-4 stats-graph">
+                    @(Html.Kendo().Chart<LogAnalyzer.Models.ChartBrowsersView>()
+                                                 .Name("chartClientOS")
+                                                 .HtmlAttributes(new { @class = "data-view" })
+                                                 .Title(title => title.Text("Client OS").Position(ChartTitlePosition.Top))
+                                                 .ChartArea(chartArea => chartArea.Background("none"))
+                                                 .Legend(legend => legend
+                                                     .Visible(false).Position(ChartLegendPosition.Top)
+                                                 )
+                                                  .DataSource(ds =>
+                                                  {
+                                                      ds.Read(read => read.Action("ChartClientOS", "Services").Data("getData"));
+                                                      ds.Sort(sort => sort.Add(model => model.Browser).Ascending());
+                                                  })
+                                               .Series(series =>
+                                               {
+                                                   series.Donut(model => model.Percentage, model => model.Browser).Labels(labels => labels
+                                                                           .Template("#= category #: \n #= value#%")
+                                                                           .Background("transparent")
+                                                                           .Visible(true).Position(ChartSeriesLabelsPosition.OutsideEnd)
+                                                                       );
+                                               })
+
+                                                .Tooltip(tooltip => tooltip.Visible(true).Template("${ category } - ${ value }%"))
+                    )
+                </div>
+            </div>
+            <div id="LogContainer" style="background-color:#ffffff;" class="row">
+                <div style="text-align:center;margin-top:10px;">
+                    <text style="font:16px Arial, Helvetica, sans-serif;white-space:pre;color: #8e8e8e; " stroke="none" fill="#8e8e8e" fill-opacity="1">Log strings</text>
+                </div>
+                @(Html.Kendo().Grid<LogAnalyzer.Models.GridRowLogView>()
+                                        .Name("grid")
+                                        .HtmlAttributes(new { @class = "data-view", style = "margin: 10px 5px;" })
+                                        .ToolBar(toolbar =>
+                                        {
+                                            toolbar.Excel().Text("Экспорт в Excel");
+                                        })
+                                        .Columns(columns =>
+                                        {
+                                            columns.Bound(p => p.date).Format("{0:dd.MM.yyyy}").Width(140);
+                                            columns.Bound(p => p.time).Width(100);
+                                            columns.Bound(p => p.uri).ClientFooterTemplate("Total Count: #=count#").ClientGroupHeaderColumnTemplate("Count: #=count#");
+                                            columns.Bound(p => p.clientIP).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                                            columns.Bound(p => p.username).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                                            columns.Bound(p => p.agent).Hidden();
+
+                                        })
+                                        .Excel(excel => excel
+                                            .FileName("LogsExport.xlsx")
+                                            .Filterable(true)
+                                            .AllPages(true)
+                                        //.ProxyURL(Url.Action("Excel_Export_Save", "Services"))
+                                        )
+                                        //.Pageable(page=>page.Refresh(true).PageSizes(new[] { 10, 25, 50, 100, 250, 500 }).Input(true).ButtonCount(7))
+                                        .ColumnMenu()
+                                        .Sortable()
+                                        .Resizable(r=>r.Columns(true))
+                                        .Groupable()
+                                        //.Scrollable()
+                                        .Filterable()
+                                        .Events(ev=>ev.DataBound("onDataBound"))
+                                        .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            //.PageSize(50)
+                                            .Read(read => read.Action("GridRead", "Services").Data("getData"))
+                                            .Group(group=>group.AddDescending(g=> g.date)).Group(group => group.Add(g => g.clientIP)).Group(group => group.Add(g => g.username))
+                                            .Aggregates(aggregates =>
+                                            {
+                                                aggregates.Add(p => p.uri).Count();
+                                            })
+                                        )
+                )
+            </div>
+
+            
+    </div>
+</div>
+    </div>
+<script>
+
+    //Сворачиваем все группы
+    function onDataBound(e) {
+        
+        var grid = this;
+        $(".k-grouping-row").each(function (e) {
+            grid.collapseGroup(this);
+        });
+    }
+    function GetDateRange() {
+        var daterangepicker = $("#daterangepicker").data("kendoDateRangePicker");
+        var range = daterangepicker.range()
+
+        return range;
+    }
+
+    function GetRefreshElements()
+    {
+        var result = [];
+
+        $(".data-view").each(function (i, element) {
+            switch ($(element).attr("data-role")) {
+                case 'chart':
+                    result.push($(element).data("kendoChart"));
+                    break;
+                case 'grid' :
+                    result.push($(element).data("kendoGrid"));
+                    break;
+                }
+
+        });
+
+        return result;
+    }
+
+    function RefreshData()
+    {
+        var range = GetDateRange();
+        var dateBegin = range.start;
+        var dateEnd = range.end;
+        if ((dateBegin != null || dateBegin != undefined) && (dateEnd != null || dateEnd != undefined))
+        {
+            GetRefreshElements().forEach(function (element) {
+
+                element.dataSource.read();
+            })
+        }
+    }
+
+
+    function GetCheckedItemsTree() {
+
+        var result = [];
+
+        //get reference to the TreeView widget
+        var treeview = $("#tree").data("kendoTreeView");
+
+        //get the checked items
+        var items = $("#tree .k-item input[type=checkbox]:checked").closest(".k-item");
+
+
+        $(items).each(function (index, element) {
+
+            var id = treeview.dataItem(element).id
+            result.push(id);
+            
+        });
+
+        return result;
+    }
+
+
+    function getData() {
+
+        var range = GetDateRange();
+
+        var sites = GetCheckedItemsTree();
+
+        return {
+            sites: sites,
+            datebegin: range.start.toJSON(),
+            dateend: range.end.toJSON(),
+           
+        }
+    }
+
+
+
+</script>
+<style>
+
+    .k-icon-18 {
+        font-size: 18px; /* Sets icon size to 32px */
+    }
+
+    .k-icon-13 {
+        font-size: 15px; /* Sets icon size to 32px */
+    }
+
+    #tree .k-item {
+        color: #b8bbc2;
+        vertical-align: middle;
+    }
+</style>
+<script id="treeview-template" type="text/kendo-ui-template">
+    # if (item.issite) { #
+
+    <!--<span class="k-icon  k-i-globe-outline k-icon-18"></span>-->
+    <span style="text-decoration: none; margin-left: 0.5em; font-size: 16px;">
+        #: item.name #
+    </span>
+
+    # } else { #
+
+    <!--<span class="k-icon  k-i-exe k-icon-13" style="margin: 1px 0 0 3px;"></span>-->
+    <span style="font-size: 13px;">
+        #: item.name #
+    </span>
+
+    #}#
+
+</script>
+

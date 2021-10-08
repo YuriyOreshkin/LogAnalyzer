@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LogAnalyzer</title>
+
+
+    <link href="@Url.Content("~/css/kendo/2019.3.1023/kendo.uniform.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/kendo/2019.3.1023/kendo.common.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/kendo/2019.3.1023/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
+
+    <script src="@Url.Content("~/js/kendo/2019.3.1023/jquery.min.js")"></script>
+    <script src="@Url.Content("~/js/kendo/2019.3.1023/jszip.min.js")"></script>
+    <script src="@Url.Content("~/js/kendo/2019.3.1023/jquery.validate.js")"></script>
+    <script src="@Url.Content("~/js/kendo/2019.3.1023/jquery.validate.unobtrusive.js")"></script>
+    <script src="@Url.Content("~/js/kendo/2019.3.1023/kendo.all.min.js")"></script>
+    <script src="@Url.Content("~/js/kendo/2019.3.1023/kendo.aspnetmvc.min.js")"></script>
+
+    <script src="@Url.Content("~/js/kendo/2019.3.1023/cultures/kendo.culture.ru-RU.min.js")"></script>
+
+    <environment names="Development,Staging,Production">
+
+        <link rel="stylesheet" href="~/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+</head>
+    <body class="k-content">
+       
+        
+            <div class="container-fluid">
+                @RenderBody()
+            </div>
+
+        <environment names="Development,Staging,Production">
+            <script src="~/lib/bootstrap/js/bootstrap.js"></script>
+        </environment>
+       
+        @RenderSection("scripts", required: false)
+    </body>
+    </html>
